@@ -1,25 +1,27 @@
-<?php
-require_once 'config.php';
-use IT\Data;
-use IT\Plugins\AltoRouter;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload your files</title>
+</head>
+<body>
+  <form enctype="multipart/form-data" action="upload.php" method="POST">
+    <p>Upload your file</p>
+    <input type="file" name="uploaded_file"></input><br />
+    <input type="submit" value="Upload"></input>
+  </form>
+</body>
+</html>
+<?PHP
+  if(!empty($_FILES['uploaded_file']))
+  {
+    $path = "uploads/";
+    $path = $path . basename( $_FILES['uploaded_file']['name']);
 
-$router = new AltoRouter();
-$router->setBasePath(Data::BasePath(ABSPATH));
-$router->addRoutes(array(
-    array('GET', '/link/[:slug]/[i:quality]/[a:uid]/', ABSPATH . '/link.php', 'file_link'),
-    array('GET', '/' . Data::Get("embed_slug") . '/[:slug]/', ABSPATH . '/play.php', 'embed_player'),
-    array('GET', '/' . Data::Get("download_slug") . '/[:slug]/', ABSPATH . '/play.php', 'video_download'),
-));
-
-$match = $router->match();
-if ($match) {
-    if (is_readable($match["target"])) {
-        $var->parse_get($match["params"]);
-        $var->parse_get(array("param" => $match["name"]));
-        require_once $match["target"];
-    } else {
-        require_once TEMPLATES . 'pages/404_error.php';
+    if(move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $path)) {
+      echo "The file ".  basename( $_FILES['uploaded_file']['name']). 
+      " has been uploaded";
+    } else{
+        echo "There was an error uploading the file, please try again!";
     }
-} else {
-    require_once TEMPLATES . 'pages/404_error.php';
-}
+  }
+?>
